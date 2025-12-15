@@ -1,6 +1,2 @@
-*
-!.gitignore
-!.vscodeignore
-!README.md
-!LICENSE.md
-!auto-accept-agent/releases
+.env
+node_modules

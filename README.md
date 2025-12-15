@@ -1,93 +1,64 @@
-# ⚡ Auto Accept Agent
+# Auto Accept Agent
 
-**Tired of babysitting your AI?**
-
-Auto Accept Agent automatically handles those repetitive "Accept", "Run", and "Confirm" actions so you can focus on the code, not the UI.
+**Automate AI code acceptance with a single toggle.**
 
 ---
 
-## 🎯 Supported Platforms
+## How It Works
 
-| Platform | Method | Setup |
-|----------|--------|-------|
-| **VS Code / Antigravity** | Extension (automatic) | ⭐ Easy |
-| **Cursor IDE** | Console Script | ⭐ Easy |
+### Antigravity (VS Code)
+Toggle ON → Extension auto-accepts Antigravity suggestions. No setup required.
 
----
+### Cursor
+1. Toggle ON → "Launch Cursor with Auto-Accept?" appears
+2. Click **Launch Cursor** → New Cursor window opens with debugging enabled
+3. In the **new window**, toggle ON → Auto-accept starts working
 
-## 📦 Installation
-
-### For VS Code / Antigravity
-
-1. Install from VS Code Marketplace: Search for `Auto Accept Agent`
-2. Or install `.vsix` manually: Extensions → `...` → `Install from VSIX`
-3. Click the status bar item to toggle ON/OFF
-
-**That's it!** The extension automatically detects and accepts AI suggestions.
+**Why the extra step?** Cursor doesn't expose the APIs needed for auto-accept. Launching with debugging enabled allows the extension to inject the auto-clicker.
 
 ---
 
-### For Cursor IDE
+## Usage
 
-When you toggle the extension ON in Cursor, it will:
-1. **Copy the auto-accept script** to your clipboard
-2. **Open DevTools** automatically
+| Action | How |
+|--------|-----|
+| Toggle | Click `Auto Accept: ON/OFF` in status bar |
+| Manual trigger | Command Palette → `Auto Accept: Accept Now` |
 
-Then just:
-1. Type `allow pasting` in the Console and press Enter
-2. Paste the script (Ctrl+V) and press Enter
-3. Done! ✅
+**Buttons clicked automatically:**
+- Accept All / Accept
+- Apply All / Apply
+- Run Command / Run
+- Keep All / Confirm
 
-**Controls** (in Console):
-```javascript
-autoAccept.start()   // Start auto-accepting
-autoAccept.stop()    // Stop
-autoAccept.toggle()  // Toggle on/off
-autoAccept.status()  // Show click count
-```
+**Ignored:** Skip, Cancel, Reject, Discard
 
 ---
 
-## ⚙️ How It Works
+## Multi-Instance Support
 
-### VS Code Extension
-- Polls for available accept commands every second
-- Executes registered VS Code commands
-- Works with Antigravity, Copilot, and VS Code Chat
-
-### Cursor Script
-- Scans DOM for buttons with text like "Accept", "Run", "Apply"
-- Simulates mouse events to click them
-- Excludes dangerous buttons (Skip, Cancel, Reject, etc.)
+Each time you click "Launch Cursor", a new instance opens on the next available port (9222, 9223, etc.). The extension connects to all instances automatically.
 
 ---
 
-## ⚠️ Disclaimer
+## Troubleshooting
 
-**Use at your own risk.** Auto-accepting AI-generated code without review can introduce bugs. Best suited for:
-- Small projects and prototypes
-- Trusted AI models
-- Development environments
+**Status shows "ON (0 CDP)"**
+- CDP not connected. Make sure you launched Cursor via the extension's "Launch Cursor" button.
 
-Always review critical code changes manually.
-
----
-
-## 📁 Files
-
-| File | Purpose |
-|------|---------|
-| `extension.js` | Main VS Code extension |
-| `cursor-console-script.js` | Script for Cursor (copied to clipboard) |
+**Buttons not being clicked**
+- Ensure the panel with buttons is visible
+- Check that the extension shows "ON" with a connection count
 
 ---
 
-## 🙏 Credits
+## Requirements
 
-Cursor script inspired by [TRUE YOLO MODE](https://github.com/ivalsaraj/true-yolo-cursor-auto-accept-full-agentic-mode) by @ivalsaraj.
+- VS Code 1.75.0 or later
+- For Cursor: Must launch via extension (or with `--remote-debugging-port=9222`)
 
 ---
 
 ## License
 
-MIT
+MIT - see [LICENSE.md](LICENSE.md)

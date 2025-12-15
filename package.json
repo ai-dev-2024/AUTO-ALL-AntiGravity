@@ -1,0 +1,58 @@
+{
+    "name": "auto-accept-agent",
+    "displayName": "Auto Accept Agent",
+    "description": "Auto-accept AI suggestions for Antigravity and Cursor.",
+    "version": "2.9.6",
+    "publisher": "MunKhin",
+    "icon": "media/icon.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/MunKhin/auto-accept-agent"
+    },
+    "files": [
+        "extension.js",
+        "antigravity.js",
+        "cursor-cdp.js",
+        "cursor-launcher.js",
+        "settings-panel.js",
+        "package.json",
+        "README.md",
+        "media/**"
+    ],
+    "categories": [
+        "Machine Learning",
+        "Other"
+    ],
+    "keywords": [
+        "antigravity",
+        "cursor",
+        "ai",
+        "auto-accept"
+    ],
+    "engines": {
+        "vscode": "^1.75.0"
+    },
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "auto-accept.toggle",
+                "title": "Auto Accept: Toggle ON/OFF"
+            },
+            {
+                "command": "auto-accept.acceptNow",
+                "title": "Auto Accept: Accept Now"
+            },
+            {
+                "command": "auto-accept.showSettings",
+                "title": "Auto Accept: Settings"
+            }
+        ]
+    },
+    "dependencies": {
+        "ws": "^8.14.2"
+    }
+}
