@@ -2,7 +2,7 @@
     "name": "auto-accept-agent",
     "displayName": "Auto Accept Agent",
     "description": "Auto Accept Agent: Automated Cursor workflow with Pro recovery tools.",
-    "version": "6.6.2",
+    "version": "6.9.2",
     "publisher": "MunKhin",
     "icon": "media/icon.png",
     "repository": {

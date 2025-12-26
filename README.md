@@ -1,13 +1,8 @@
-# Antigravity Auto Accept
+# Auto Accept for Antigravity
 
-## Instantly accepts agent file edits and terminal commands for you.
+## Run 3 AI agents in parallel. Zero babysitting.
 
-Supported agent actions:
-- ✅ Terminal commands
-- ✅ File edits
-- ✅ Retry requests
-
-Using background global detection, auto accept agent manages all agent tasks, across windows and tabs.
+Stop watching tabs. Auto Accept keeps every Antigravity conversation moving — accepting file edits, terminal commands, and recovery prompts automatically.
 
 ---
 
@@ -15,35 +10,69 @@ Using background global detection, auto accept agent manages all agent tasks, ac
 
 ---
 
-## Core Features
+## Why Auto Accept?
 
-### Background Automation (Pro)
-Execute agent tasks in all conversations continuously without manual intervention.
+Antigravity's multi-agent workflow is powerful, but it stops every time the agent needs approval. 
 
-### Real-time Status Tracking
-Monitor the state of your conversations through a streamlined visual overlay:
-- **In Progress (Purple)**: Active polling and automation execution.
-- **Completed (Green)**: Finalized state detection (triggered automatically).
+**That's dozens of interruptions per hour.**
 
-### Seamless Control
-- **Status Bar Toggle**: Instant management via the "Auto-Accept: ON/OFF" status bar item.
-- **Global Shortcut**: Toggle the agent instantly using the "Toggle ON/OFF" command.
-- **Integrated Settings**: Manage Pro features and global configurations through a unified control panel.
-- **100% uptime** The automation remains active and responsive even when the IDE is minimized or unfocused.
+Auto Accept eliminates the wait:
+- ✅ **File edits** — Auto-applied
+- ✅ **Terminal commands** — Auto-executed
+- ✅ **Retry prompts** — Auto-confirmed
+- ✅ **Stuck agents** — Auto-recovered
+
 ---
 
-## Usage
+## Features
 
-1. Install the extension.
-2. Relaunch the IDE in one click.
-3. The extension activates automatically (Auto-Accept: ON) by default.
-4. Start an agent task and the extension will manage all subsequent confirmations.
+### Background Mode (Pro)
+Run multiple Antigravity tabs simultaneously. Every conversation auto-accepts in the background — no tab-switching required.
+
+### Dangerous Command Blocking
+Built-in protection against destructive commands like `rm -rf /`. Pro users can customize the blocklist.
+
+### Real-time Status Overlay
+Visual indicators show conversation state:
+- **Purple** — In progress, actively polling
+- **Green** — Task completed
+
+### Works Everywhere
+- ✅ Antigravity
+- ✅ Cursor
+- ✅ Multiple windows
+- ✅ Minimized/unfocused
+
+---
+
+## Quick Start
+
+1. **Install** the extension
+2. **Relaunch** when prompted (one-click)
+3. **Done** — Auto Accept activates automatically
+
+The extension runs silently. Check the status bar for `Auto Accept: ON`.
+
+---
+
+## Pro Features
+
+| Feature | Free | Pro |
+|---------|------|-----|
+| Auto-accept in active tab | ✅ | ✅ |
+| Background mode (all tabs) | — | ✅ |
+| Custom banned commands | — | ✅ |
+| Adjustable polling speed | — | ✅ |
+| Stuck agent recovery | — | ✅ |
+| Multi-window support | — | ✅ |
+
 
 ---
 
 ## Requirements
 
-- Antigravity or Cursor IDEs.
+- Antigravity or Cursor IDE
+- One-time relaunch after install
 
 ---
 
