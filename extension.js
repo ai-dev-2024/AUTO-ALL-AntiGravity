@@ -805,19 +805,21 @@ async function showVersionNotification(context) {
     const hasShown = context.globalState.get(VERSION_7_0_KEY, false);
     if (hasShown) return;
 
-    // Copy for v7.0
-    const title = "🚀 What's new in Auto Accept 7.0";
-    const body = `Smarter. Faster. More reliable.
+    // Welcome notification for AUTO ALL AntiGravity
+    const title = "🚀 Welcome to AUTO ALL AntiGravity!";
+    const body = `All Pro Features Unlocked. Free Forever.
 
-✅ Smart Away Notifications — Get notified only when actions happened while you were truly away.
+✅ Multi-Tab Mode — Run multiple conversations in parallel, auto-accepts in all tabs.
 
-📊 Session Insights — See exactly what happened when you turn off Auto Accept: file edits, terminal commands, and blocked interruptions.
+⚡ Instant Polling — Fastest possible response time for auto-accepting.
 
-⚡ Improved Background Mode — Faster, more reliable multi-chat handling.
+🛡️ Dangerous Command Blocking — Built-in protection with customizable blocklist.
 
-🛡️ Enhanced Stability — Complete analytics rewrite for rock-solid tracking.`;
+📊 Session Insights — Track auto-accepts, time saved, and blocked commands.
+
+☕ Support development: ko-fi.com/ai_dev_2024`;
     const btnDashboard = "View Dashboard";
-    const btnGotIt = "Got it";
+    const btnGotIt = "Let's Go!";
 
     // Mark as shown immediately to prevent loops/multiple showings
     await context.globalState.update(VERSION_7_0_KEY, true);
