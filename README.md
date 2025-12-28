@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://open-vsx.org/extension/auto-all-antigravity/auto-all-antigravity">
-    <img src="https://img.shields.io/badge/Open%20VSX-v1.0.6-22c55e?style=for-the-badge&logo=eclipse-ide" alt="Open VSX Version" />
+    <img src="https://img.shields.io/badge/Open%20VSX-v1.0.7-22c55e?style=for-the-badge&logo=eclipse-ide" alt="Open VSX Version" />
   </a>
   <a href="https://github.com/ai-dev-2024/AUTO-ALL-AntiGravity/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License" />
