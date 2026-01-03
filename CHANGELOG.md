@@ -2,6 +2,15 @@
 
 All notable changes to **auto-all-Antigravity** will be documented in this file.
 
+## [1.0.12] - 2026-01-03
+
+### Added
+- **GitHub Actions CI/CD**: Automatic publishing to Open VSX when version tags are pushed.
+- **Agent release workflow**: Use `/release` or say "update all and push" for one-command releases.
+- CI/CD documentation in README.
+
+---
+
 ## [1.0.11] - 2026-01-03
 
 ### Added

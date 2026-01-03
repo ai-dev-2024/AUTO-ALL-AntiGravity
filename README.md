@@ -12,7 +12,7 @@
 
 <p align="center">
   <a href="https://open-vsx.org/extension/ai-dev-2024/auto-all-antigravity">
-    <img src="https://img.shields.io/badge/Open%20VSX-v1.0.11-22c55e?style=for-the-badge&logo=eclipse-ide" alt="Open VSX Version" />
+    <img src="https://img.shields.io/badge/Open%20VSX-v1.0.12-22c55e?style=for-the-badge&logo=eclipse-ide" alt="Open VSX Version" />
   </a>
   <a href="https://github.com/ai-dev-2024/AUTO-ALL-AntiGravity/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License" />
@@ -169,6 +169,24 @@ If you use **Antigravity Manager** to switch between accounts, the extension wor
 This ensures Antigravity is always launched with CDP (Chrome DevTools Protocol) enabled, which the extension requires for auto-accepting actions.
 
 > **Note**: If CDP is lost (e.g., Antigravity restarted without the flag), the extension will detect this and prompt you to relaunch.
+
+---
+
+## 🚀 CI/CD & Releases
+
+This project uses **GitHub Actions** to automatically publish new versions to Open VSX.
+
+### How It Works
+
+1. Push a version tag (e.g., `v1.0.12`)
+2. GitHub Actions automatically:
+   - Builds and packages the extension
+   - Publishes to Open VSX
+   - Creates a GitHub Release with the VSIX attached
+
+### Quick Release
+
+Maintainers can use the `/release` workflow to automate the entire process—version bump, changelog, commit, tag, and push.
 
 ---
 
