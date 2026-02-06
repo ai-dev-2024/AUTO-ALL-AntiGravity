@@ -605,16 +605,9 @@
 
         // Use configured patterns from state if available, otherwise use defaults
         const state = window.__autoAllState || {};
-        const defaultPatterns = ['accept', 'accept all', 'run', 'run command', 'retry', 'apply', 'execute', 'confirm', 'allow once', 'allow', 'proceed', 'continue', 'yes', 'ok', 'save', 'approve', 'enable', 'install', 'update', 'overwrite'];
+        const defaultPatterns = ['accept', 'accept all', 'run', 'run command', 'retry', 'apply', 'execute', 'confirm', 'allow once', 'allow', 'always allow', 'proceed', 'continue', 'yes', 'ok', 'save', 'approve', 'enable', 'install', 'update', 'overwrite'];
         const patterns = state.acceptPatterns || defaultPatterns;
-        const rejects = ['skip', 'reject', 'cancel', 'close', 'refine', 'deny', 'no', 'dismiss', 'abort', 'ask every time', 'always run', 'always allow'];
-
-        // Skip dropdown menu items - these are handled by clickAlwaysRunDropdown
-        if (el.getAttribute('role') === 'menuitem' || el.getAttribute('role') === 'option') return false;
-        if (el.closest('[role="menu"]') || el.closest('[role="listbox"]')) return false;
-
-        // Skip elements that are dropdown triggers (usually have a caret/arrow)
-        if (text.includes('ask every time') || text === 'always run' || text === 'always allow') return false;
+        const rejects = ['skip', 'reject', 'cancel', 'close', 'refine', 'deny', 'no', 'dismiss', 'abort', 'ask every time'];
 
         if (rejects.some(r => text.includes(r))) return false;
         if (!patterns.some(p => text.includes(p))) return false;
@@ -811,10 +804,7 @@
             cycle++;
             log(`[Loop] Cycle ${cycle}: Starting...`);
 
-            // First: Click "Always run" dropdown if visible (new Antigravity permission UI)
-            clickAlwaysRunDropdown();
-
-            // Look for Antigravity accept buttons AND general dialog buttons (for permissions, etc.)
+            // Just click accept buttons directly - no dropdown interaction needed
             const clicked = await performClick(['.bg-ide-button-background', 'button', '[role="button"]', '[class*="button"]']);
             if (clicked > 0) {
                 log(`[Loop] Cycle ${cycle}: Clicked ${clicked} accept buttons`);
