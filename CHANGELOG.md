@@ -2,6 +2,23 @@
 
 All notable changes to **auto-all-Antigravity** will be documented in this file.
 
+## [1.0.18] - 2026-02-06
+
+### Added
+- **Ultra-Fast Response Times**: Poll interval reduced to 100ms for near-instant auto-accepting
+- **"Always Run" Dropdown Support**: Automatically clicks "Always run" in Antigravity's new permission dropdown
+
+### Fixed
+- **Dropdown Re-trigger Issue**: Fixed bug where "Always run" dropdown kept appearing after being clicked
+  - Extension now tracks when dropdown has been clicked and won't interact with it again
+  - Dropdown triggers and menu items are excluded from normal button clicking
+- **Background Mode Speed**: Multi-tab cycling speeds improved (accept: 50ms, tab switch: 200ms)
+
+### Changed
+- Removed 'always allow', 'always auto' from accept patterns (now handled by dedicated dropdown handler)
+
+---
+
 ## [1.0.17] - 2026-02-06
 
 ### Added

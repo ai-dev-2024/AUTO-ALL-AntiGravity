@@ -5373,7 +5373,7 @@ var INSTANCE_ID = Math.random().toString(36).substring(7);
 var isEnabled = false;
 var isPro = false;
 var isLockedOut = false;
-var pollFrequency = 2e3;
+var pollFrequency = 100;
 var bannedCommands = [];
 var acceptPatterns = [];
 var backgroundModeEnabled = false;
@@ -5425,9 +5425,9 @@ async function activate(context) {
     isPro = context.globalState.get(PRO_STATE_KEY, false);
     isPro = true;
     if (isPro) {
-      pollFrequency = context.globalState.get(FREQ_STATE_KEY, 1e3);
+      pollFrequency = context.globalState.get(FREQ_STATE_KEY, 100);
     } else {
-      pollFrequency = 300;
+      pollFrequency = 100;
     }
     backgroundModeEnabled = context.globalState.get(BACKGROUND_MODE_KEY, false);
     const defaultBannedCommands = [

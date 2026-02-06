@@ -120,7 +120,7 @@ rmdir /s /q
 
 ### From VSIX File
 ```bash
-antigravity --install-extension auto-all-antigravity-1.0.14.vsix
+antigravity --install-extension auto-all-antigravity-1.0.18.vsix
 ```
 
 ### Verify Installation

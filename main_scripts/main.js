@@ -8,10 +8,10 @@ window.__autoAllState = window.__autoAllState || {
 };
 
 window.__autoAllStart = function (config) {
-    
+
     const newMode = (config.isBackgroundMode && config.isPro) ? 'background' : 'simple';
     if (window.__autoAllState.isRunning && window.__autoAllState.currentMode === newMode) {
-        return; 
+        return;
     }
 
     if (window.__autoAllState.isRunning) {
@@ -38,7 +38,7 @@ window.__autoAllStart = function (config) {
 
 window.__autoAllStop = function () {
     window.__autoAllState.isRunning = false;
-    
+
     window.__autoAllState.currentMode = null;
     window.__autoAllState.tabNames = [];
     window.__autoAllState.completionStatus = {};
@@ -57,7 +57,7 @@ function startSimpleCycle(config) {
             return;
         }
         autoAll(buttons);
-        setTimeout(step, config.pollInterval || 1000);
+        setTimeout(step, config.pollInterval || 100);
     }
     step();
 }

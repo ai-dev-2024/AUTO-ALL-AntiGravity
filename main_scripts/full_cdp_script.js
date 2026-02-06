@@ -605,9 +605,16 @@
 
         // Use configured patterns from state if available, otherwise use defaults
         const state = window.__autoAllState || {};
-        const defaultPatterns = ['accept', 'accept all', 'run', 'run command', 'retry', 'apply', 'execute', 'confirm', 'allow once', 'allow', 'always allow', 'always auto', 'proceed', 'continue', 'yes', 'ok', 'save', 'approve', 'enable', 'install', 'update', 'overwrite'];
+        const defaultPatterns = ['accept', 'accept all', 'run', 'run command', 'retry', 'apply', 'execute', 'confirm', 'allow once', 'allow', 'proceed', 'continue', 'yes', 'ok', 'save', 'approve', 'enable', 'install', 'update', 'overwrite'];
         const patterns = state.acceptPatterns || defaultPatterns;
-        const rejects = ['skip', 'reject', 'cancel', 'close', 'refine', 'deny', 'no', 'dismiss', 'abort'];
+        const rejects = ['skip', 'reject', 'cancel', 'close', 'refine', 'deny', 'no', 'dismiss', 'abort', 'ask every time', 'always run', 'always allow'];
+
+        // Skip dropdown menu items - these are handled by clickAlwaysRunDropdown
+        if (el.getAttribute('role') === 'menuitem' || el.getAttribute('role') === 'option') return false;
+        if (el.closest('[role="menu"]') || el.closest('[role="listbox"]')) return false;
+
+        // Skip elements that are dropdown triggers (usually have a caret/arrow)
+        if (text.includes('ask every time') || text === 'always run' || text === 'always allow') return false;
 
         if (rejects.some(r => text.includes(r))) return false;
         if (!patterns.some(p => text.includes(p))) return false;
@@ -650,6 +657,62 @@
             setTimeout(check, 50);
         });
     }
+
+    // Click "Always run" option in Antigravity's permission dropdown (new UI feature)
+    // Track if we've already clicked it to avoid re-triggering the dropdown
+    let alwaysRunClicked = false;
+
+    function clickAlwaysRunDropdown() {
+        // If we've already clicked "Always run", don't interact with dropdown anymore
+        if (alwaysRunClicked) {
+            return false;
+        }
+
+        // Look for dropdown menu items containing "Always run" or "Always allow"
+        const dropdownSelectors = [
+            '[role="menuitem"]',
+            '[role="option"]',
+            '.dropdown-item',
+            '.menu-item',
+            'div[class*="dropdown"] div',
+            'div[class*="menu"] div',
+            'li'
+        ];
+
+        for (const selector of dropdownSelectors) {
+            const items = queryAll(selector);
+            for (const item of items) {
+                const text = (item.textContent || '').trim().toLowerCase();
+                // Match "Always run", "Always allow", etc.
+                if (text === 'always run' ||
+                    text === 'always allow' ||
+                    (text.includes('always') && (text.includes('run') || text.includes('allow')))) {
+
+                    // Make sure it's visible and clickable
+                    const style = window.getComputedStyle(item);
+                    const rect = item.getBoundingClientRect();
+                    const isVisible = style.display !== 'none' &&
+                        style.visibility !== 'hidden' &&
+                        parseFloat(style.opacity) > 0.1 &&
+                        rect.width > 0 && rect.height > 0;
+
+                    if (isVisible) {
+                        log('[Dropdown] Clicking "Always run" option - will not click again');
+                        item.dispatchEvent(new MouseEvent('click', { view: window, bubbles: true, cancelable: true }));
+                        alwaysRunClicked = true;  // Remember we clicked it
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    // Reset the alwaysRunClicked flag when a new session starts
+    function resetAlwaysRunState() {
+        alwaysRunClicked = false;
+    }
+
 
     async function performClick(selectors) {
         const found = [];
@@ -747,6 +810,9 @@
         while (window.__autoAllState.isRunning && window.__autoAllState.sessionID === sid) {
             cycle++;
             log(`[Loop] Cycle ${cycle}: Starting...`);
+
+            // First: Click "Always run" dropdown if visible (new Antigravity permission UI)
+            clickAlwaysRunDropdown();
 
             // Look for Antigravity accept buttons AND general dialog buttons (for permissions, etc.)
             const clicked = await performClick(['.bg-ide-button-background', 'button', '[role="button"]', '[class*="button"]']);

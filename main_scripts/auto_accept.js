@@ -1,11 +1,15 @@
 // function that simply clicks the "accept"/"run"/"retry" buttons
 
 import * as utils from './utils.js';
+import { getDocuments } from './utils.js';
 
 
 // high level wrapper of click() with constraints
 export function autoAccept(buttons) {
     utils.assert(Array.isArray(buttons), "buttons must be an array")
+
+    // First, try to click "Always run" in any visible dropdown menus
+    clickAlwaysRunDropdown();
 
     let targetSelectors = []
     let panelSelector = null
@@ -23,6 +27,55 @@ export function autoAccept(buttons) {
 
     utils.assert(targetSelectors.length > 0, "no target selectors found")
     return click(targetSelectors, panelSelector)
+}
+
+
+// Click "Always run" option in Antigravity's permission dropdown
+function clickAlwaysRunDropdown() {
+    const docs = getDocuments();
+
+    for (const doc of docs) {
+        // Look for dropdown menu items containing "Always run" or "Always allow"
+        const dropdownSelectors = [
+            '[role="menuitem"]',
+            '[role="option"]',
+            '.dropdown-item',
+            '.menu-item',
+            'div[class*="dropdown"] div',
+            'div[class*="menu"] div',
+            'li',
+            'button'
+        ];
+
+        for (const selector of dropdownSelectors) {
+            const items = doc.querySelectorAll(selector);
+            for (const item of items) {
+                const text = (item.textContent || '').trim().toLowerCase();
+                // Match "Always run", "Always allow", "always auto-approve", etc.
+                if (text === 'always run' ||
+                    text === 'always allow' ||
+                    text.includes('always run') ||
+                    text.includes('always allow') ||
+                    text.includes('always auto')) {
+
+                    // Make sure it's visible and clickable
+                    const style = doc.defaultView.getComputedStyle(item);
+                    const rect = item.getBoundingClientRect();
+                    const isVisible = style.display !== 'none' &&
+                        style.visibility !== 'hidden' &&
+                        parseFloat(style.opacity) > 0.1 &&
+                        rect.width > 0 && rect.height > 0;
+
+                    if (isVisible) {
+                        console.log('[auto-all] Clicking "Always run" dropdown option');
+                        item.click();
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
 }
 
 

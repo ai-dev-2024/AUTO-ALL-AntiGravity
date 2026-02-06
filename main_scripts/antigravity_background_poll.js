@@ -5,9 +5,9 @@ import * as utils from './utils.js'
 import { showOverlay, manageOverlay } from './overlay.js'
 
 // hard coded intervals for web ui to have sufficient time to load
-const AG_ACCEPT_PAUSE = 500
-const AG_NEW_TAB_PAUSE = 1000
-const AG_NEXT_CONVERSATION_PAUSE = 3000
+const AG_ACCEPT_PAUSE = 50
+const AG_NEW_TAB_PAUSE = 100
+const AG_NEXT_CONVERSATION_PAUSE = 200
 
 export async function antigravityBackgroundPoll() {
     console.log('[BG-Poll] antigravityBackgroundPoll started');

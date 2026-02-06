@@ -27,7 +27,7 @@ const INSTANCE_ID = Math.random().toString(36).substring(7);
 let isEnabled = false;
 let isPro = false;
 let isLockedOut = false;
-let pollFrequency = 2000;
+let pollFrequency = 100;
 let bannedCommands = [];
 let acceptPatterns = [];
 
@@ -92,9 +92,9 @@ async function activate(context) {
         isPro = true;
 
         if (isPro) {
-            pollFrequency = context.globalState.get(FREQ_STATE_KEY, 1000);
+            pollFrequency = context.globalState.get(FREQ_STATE_KEY, 100);
         } else {
-            pollFrequency = 300;
+            pollFrequency = 100;
         }
 
         backgroundModeEnabled = context.globalState.get(BACKGROUND_MODE_KEY, false);
