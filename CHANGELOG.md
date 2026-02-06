@@ -2,6 +2,15 @@
 
 All notable changes to **auto-all-Antigravity** will be documented in this file.
 
+## [1.0.20] - 2026-02-06
+
+### Fixed
+- **Dropdown Items Excluded**: Added 'always run' and 'always allow' to reject list
+  - Extension no longer clicks on dropdown menu items
+  - Only clicks actual accept/run buttons, not permission dropdown options
+
+---
+
 ## [1.0.19] - 2026-02-06
 
 ### Fixed
