@@ -2,6 +2,17 @@
 
 All notable changes to **auto-all-Antigravity** will be documented in this file.
 
+## [1.0.22] - 2026-02-08
+
+### Improved
+- **Faster Auto-Accept Response Times**: Reduced all polling delays by ~60%
+  - Button polling: 800-1500ms → 300-500ms
+  - Tab switch delay: 2000ms → 800ms
+  - Cycle wait: 3000-5000ms → 1000-1500ms
+  - Single-tab mode: 1000ms → 500ms default
+
+---
+
 ## [1.0.21] - 2026-02-06
 
 ### Fixed

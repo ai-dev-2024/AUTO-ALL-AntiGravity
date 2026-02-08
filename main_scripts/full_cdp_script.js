@@ -607,7 +607,7 @@
         const state = window.__autoAllState || {};
         const defaultPatterns = ['accept', 'accept all', 'run', 'run command', 'retry', 'apply', 'execute', 'confirm', 'allow once', 'allow', 'proceed', 'continue', 'yes', 'ok', 'save', 'approve', 'enable', 'install', 'update', 'overwrite'];
         const patterns = state.acceptPatterns || defaultPatterns;
-        const rejects = ['skip', 'reject', 'cancel', 'close', 'refine', 'deny', 'no', 'dismiss', 'abort', 'ask every time', 'always run', 'always allow'];
+        const rejects = ['skip', 'reject', 'cancel', 'close', 'refine', 'deny', 'no', 'dismiss', 'abort', 'ask every time', 'always run', 'always allow', 'always proceed'];
 
         if (rejects.some(r => text.includes(r))) return false;
         if (!patterns.some(p => text.includes(p))) return false;
@@ -643,7 +643,7 @@
                 } else if (Date.now() - startTime >= timeout) {
                     resolve(false);
                 } else {
-                    requestAnimationFrame(check);
+                    setTimeout(check, 50);  // Use setTimeout instead of rAF - still runs when hidden
                 }
             };
 
@@ -752,7 +752,7 @@
             const clicked = await performClick(['button', '[class*="button"]', '[class*="anysphere"]']);
             log(`[Loop] Cycle ${cycle}: Clicked ${clicked} buttons`);
 
-            await workerDelay(800);
+            await workerDelay(300);
 
             const tabSelectors = [
                 '#workbench\\.parts\\.auxiliarybar ul[role="tablist"] li[role="tab"]',
@@ -790,7 +790,7 @@
             updateOverlay();
             log(`[Loop] Cycle ${cycle}: Overlay updated, waiting 3s...`);
 
-            await workerDelay(3000);
+            await workerDelay(1000);
         }
         log('[Loop] cursorLoop STOPPED');
     }
@@ -810,7 +810,7 @@
                 log(`[Loop] Cycle ${cycle}: Clicked ${clicked} accept buttons`);
             }
 
-            await workerDelay(1500);
+            await workerDelay(500);
 
             const tabs = queryAll('button.grow');
             log(`[Loop] Cycle ${cycle}: Found ${tabs.length} tabs`);
@@ -826,7 +826,7 @@
                     targetTab.dispatchEvent(new MouseEvent('click', { view: window, bubbles: true, cancelable: true }));
                     index++;
 
-                    await workerDelay(2000);
+                    await workerDelay(800);
 
                     const badges = queryAll('span').filter(s => {
                         const t = s.textContent.trim();
@@ -846,7 +846,7 @@
 
             updateOverlay();
 
-            await workerDelay(5000);
+            await workerDelay(1500);
         }
         log('[Loop] antigravityLoop STOPPED');
     }
@@ -950,7 +950,7 @@
                 (async function staticLoop() {
                     while (state.isRunning && state.sessionID === sid) {
                         performClick(['button', '[class*="button"]', '[class*="anysphere"]']);
-                        await workerDelay(config.pollInterval || 1000);
+                        await workerDelay(config.pollInterval || 500);
                     }
                 })();
             }
