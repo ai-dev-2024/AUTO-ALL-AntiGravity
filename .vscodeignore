@@ -1,0 +1,15 @@
+.env
+.git/**
+.github/**
+.agent/**
+.gitignore
+.vscodeignore
+.gemini/**
+node_modules/**
+*.vsix
+*.zip
+temp_vsix/**
+vsix_check/**
+temp_extract/**
+package-lock.json
+CONTRIBUTING.md
