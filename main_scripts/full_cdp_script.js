@@ -600,12 +600,21 @@
     }
 
     function isAcceptButton(el) {
-        const text = (el.textContent || "").trim().toLowerCase();
-        if (text.length === 0 || text.length > 50) return false;
+        // Use direct text of the element itself first (not deep textContent which includes children)
+        let text = '';
+        // Try to get the button's own text first
+        if (el.childNodes.length <= 3) {
+            // Simple button - use textContent
+            text = (el.textContent || '').trim().toLowerCase();
+        } else {
+            // Complex button with many children - use innerText which is more readable
+            text = (el.innerText || el.textContent || '').trim().toLowerCase();
+        }
+        if (text.length === 0 || text.length > 100) return false;
 
         // Use configured patterns from state if available, otherwise use defaults
         const state = window.__autoAllState || {};
-        const defaultPatterns = ['accept', 'accept all', 'run', 'run command', 'retry', 'apply', 'execute', 'confirm', 'allow once', 'allow', 'proceed', 'continue', 'yes', 'ok', 'save', 'approve', 'enable', 'install', 'update', 'overwrite'];
+        const defaultPatterns = ['accept', 'accept all', 'run', 'run all', 'run command', 'retry', 'apply', 'execute', 'confirm', 'allow once', 'allow', 'proceed', 'continue', 'yes', 'ok', 'save', 'approve', 'enable', 'install', 'update', 'overwrite'];
         const patterns = state.acceptPatterns || defaultPatterns;
         const rejects = ['skip', 'reject', 'cancel', 'close', 'refine', 'deny', 'no', 'dismiss', 'abort', 'ask every time', 'always run', 'always allow', 'always proceed'];
 
@@ -795,6 +804,56 @@
         log('[Loop] cursorLoop STOPPED');
     }
 
+    // Expand collapsed sections to reveal hidden steps that need approval
+    function expandCollapsedSections() {
+        let expanded = 0;
+        // Look for elements that indicate expandable/collapsed sections
+        const expandSelectors = [
+            'button',
+            '[role="button"]',
+            'a',
+            'span[class*="expand"]',
+            'div[class*="expand"]',
+            'span[class*="collapse"]',
+            'div[class*="collapse"]',
+            '[class*="chevron"]',
+            '[class*="arrow"]'
+        ];
+
+        for (const selector of expandSelectors) {
+            const elements = queryAll(selector);
+            for (const el of elements) {
+                const text = (el.textContent || '').trim().toLowerCase();
+                // Match "Expand", "Show more", "Show all", "View details", "N steps", etc.
+                const isExpandable = (
+                    text === 'expand' ||
+                    text.includes('expand') ||
+                    text.includes('show more') ||
+                    text.includes('show all') ||
+                    text.includes('view details') ||
+                    text.includes('view all') ||
+                    // Match "N Step Requires Input" pattern
+                    /\d+\s*steps?\s*(require|need)/i.test(text) ||
+                    // Match "Collapse all" with aria-expanded
+                    (el.getAttribute('aria-expanded') === 'false')
+                );
+
+                if (isExpandable && text.length < 100) {
+                    const style = window.getComputedStyle(el);
+                    const rect = el.getBoundingClientRect();
+                    const isVisible = style.display !== 'none' && rect.width > 0 && rect.height > 0;
+
+                    if (isVisible) {
+                        log(`[Expand] Clicking expand element: "${text.substring(0, 50)}"`);
+                        el.dispatchEvent(new MouseEvent('click', { view: window, bubbles: true, cancelable: true }));
+                        expanded++;
+                    }
+                }
+            }
+        }
+        return expanded;
+    }
+
     async function antigravityLoop(sid) {
         log('[Loop] antigravityLoop STARTED');
         let index = 0;
@@ -804,7 +863,14 @@
             cycle++;
             log(`[Loop] Cycle ${cycle}: Starting...`);
 
-            // Just click accept buttons directly - no dropdown interaction needed
+            // First, expand any collapsed sections to reveal hidden steps
+            const expanded = expandCollapsedSections();
+            if (expanded > 0) {
+                log(`[Loop] Cycle ${cycle}: Expanded ${expanded} collapsed sections`);
+                await workerDelay(300); // Wait for expansion animation
+            }
+
+            // Then click accept buttons
             const clicked = await performClick(['.bg-ide-button-background', 'button', '[role="button"]', '[class*="button"]']);
             if (clicked > 0) {
                 log(`[Loop] Cycle ${cycle}: Clicked ${clicked} accept buttons`);
