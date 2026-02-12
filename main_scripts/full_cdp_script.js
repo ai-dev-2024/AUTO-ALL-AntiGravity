@@ -613,9 +613,11 @@
         if (text.length === 0 || text.length > 100) return false;
 
         // Use configured patterns from state if available, otherwise use defaults
+        // state.acceptPatterns === null means "not configured" → use defaults
+        // state.acceptPatterns === [] means "user deselected everything" → match nothing
         const state = window.__autoAllState || {};
         const defaultPatterns = ['accept', 'accept all', 'run', 'run all', 'run command', 'retry', 'apply', 'execute', 'confirm', 'allow once', 'allow', 'proceed', 'continue', 'yes', 'ok', 'save', 'approve', 'enable', 'install', 'update', 'overwrite'];
-        const patterns = state.acceptPatterns || defaultPatterns;
+        const patterns = state.acceptPatterns !== null && state.acceptPatterns !== undefined ? state.acceptPatterns : defaultPatterns;
         const rejects = ['skip', 'reject', 'cancel', 'close', 'refine', 'deny', 'no', 'dismiss', 'abort', 'ask every time', 'always run', 'always allow', 'always proceed'];
 
         if (rejects.some(r => text.includes(r))) return false;
@@ -920,8 +922,9 @@
 
     window.__autoAllUpdateAcceptPatterns = function (patternList) {
         const state = window.__autoAllState;
-        state.acceptPatterns = Array.isArray(patternList) && patternList.length > 0 ? patternList : null;
-        log(`[Config] Updated accept patterns: ${state.acceptPatterns ? state.acceptPatterns.length + ' patterns' : 'using defaults'}`);
+        // null means "not configured, use defaults"; [] means "user chose nothing"
+        state.acceptPatterns = Array.isArray(patternList) ? patternList : null;
+        log(`[Config] Updated accept patterns: ${state.acceptPatterns !== null ? state.acceptPatterns.length + ' patterns' : 'using defaults'}`);
     };
 
     window.__autoAllGetStats = function () {
