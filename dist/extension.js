@@ -5442,6 +5442,7 @@ async function activate(context) {
       "chmod -R 777 /"
     ];
     bannedCommands = context.globalState.get(BANNED_COMMANDS_KEY, defaultBannedCommands);
+    acceptPatterns = context.globalState.get("auto-all-accept-patterns", null);
     currentIDE = detectIDE();
     outputChannel = vscode.window.createOutputChannel("auto-all-Antigravity");
     context.subscriptions.push(outputChannel);
