@@ -59,6 +59,21 @@
 
 ---
 
+## ☕ Support This Project
+
+<p align="center">
+  <a href="https://ko-fi.com/ai_dev_2024">
+    <img src="https://storage.ko-fi.com/cdn/kofi2.png?v=3" alt="Support on Ko-fi" height="50">
+  </a>
+</p>
+
+<p align="center">
+  <strong>If auto-all-Antigravity saves you time, consider buying me a coffee!</strong><br>
+  100% free and open-source — your support keeps development going. ❤️
+</p>
+
+---
+
 ## ⚡ Status Bar Modes
 
 The extension lives in your status bar with clear, intuitive controls:
@@ -130,13 +145,13 @@ Download the latest `.vsix` from [GitHub Releases](https://github.com/ai-dev-202
 
 ```bash
 # Antigravity
-antigravity --install-extension auto-all-antigravity-1.0.25.vsix
+antigravity --install-extension auto-all-antigravity-1.0.26.vsix
 
 # VS Code
-code --install-extension auto-all-antigravity-1.0.25.vsix
+code --install-extension auto-all-antigravity-1.0.26.vsix
 
 # Cursor
-cursor --install-extension auto-all-antigravity-1.0.25.vsix
+cursor --install-extension auto-all-antigravity-1.0.26.vsix
 ```
 
 ### Verify Installation
@@ -181,7 +196,8 @@ Press `Ctrl+Shift+P` and search for:
 
 | Extension Version | Date | Key Changes |
 | :--- | :--- | :--- |
-| **v1.0.25** (Latest) | Feb 2026 | Fixed auto-expand for steps requiring input, scoped clicking to agent panel only |
+| **v1.0.26** (Latest) | Feb 2026 | Sponsor button, enhanced Ko-Fi visibility, richer marketplace metadata |
+| v1.0.25 | Feb 2026 | Fixed auto-expand for steps requiring input, scoped clicking to agent panel only |
 | v1.0.23 | Feb 2026 | Added auto-expand for collapsed sections |
 | v1.0.22 | Feb 2026 | Faster polling (60% reduction in response times) |
 | v1.0.21 | Feb 2026 | Handles "Always run" permission dropdown |
@@ -218,8 +234,8 @@ Releases are fully automated via **GitHub Actions**:
 3. Commit and push a version tag:
 
    ```bash
-   git tag v1.0.25
-   git push origin v1.0.25
+   git tag v1.0.26
+   git push origin v1.0.26
    ```
 
 4. GitHub Actions automatically:

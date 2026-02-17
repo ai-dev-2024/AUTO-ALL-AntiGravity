@@ -2,6 +2,16 @@
 
 All notable changes to **auto-all-Antigravity** will be documented in this file.
 
+## [1.0.26] - 2026-02-17
+
+### Added
+
+- **Sponsor Button**: Added `sponsor` field to `package.json` — Ko-Fi link now appears as a prominent "Sponsor" button on the extension page in Antigravity/VS Code
+- **Enhanced Ko-Fi Visibility**: Ko-Fi support section is now prominently placed in the README right after Key Features
+- **Richer Metadata**: Added `homepage`, `bugs`, and `qna` fields to `package.json` for better marketplace links
+
+---
+
 ## [1.0.25] - 2026-02-17
 
 ### Fixed
