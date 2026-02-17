@@ -2,6 +2,16 @@
 
 All notable changes to **auto-all-Antigravity** will be documented in this file.
 
+## [1.0.27] - 2026-02-17
+
+### Fixed
+
+- **Auto-Accept Not Clicking Buttons**: Fixed critical bug where "Run All" and other accept buttons were not being clicked. The button text extraction was picking up "Always run" checkbox text from nearby UI elements, causing the reject filter to block legitimate buttons.
+- **Smarter Button Text Extraction**: New `getButtonOwnText()` function extracts only the button's direct text nodes, preventing false-positive rejections from neighboring elements like checkboxes and labels.
+- **Removed False Reject Patterns**: Removed `'always run'`, `'always allow'`, `'always proceed'` from the reject list — these are handled separately by the dedicated dropdown handler and were causing unintended button rejections.
+
+---
+
 ## [1.0.26] - 2026-02-17
 
 ### Added

@@ -650,27 +650,45 @@
         return false;
     }
 
+    function getButtonOwnText(el) {
+        // Get ONLY the button's own text, not text from child checkboxes, dropdowns, etc.
+        // This prevents "Run All" buttons from picking up "Always run" checkbox text
+        let ownText = '';
+        for (const node of el.childNodes) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                ownText += node.textContent;
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                // Include text from simple inline elements (spans, etc) but NOT checkboxes/inputs
+                const tag = node.tagName?.toLowerCase();
+                if (tag === 'input' || tag === 'label' || tag === 'checkbox') continue;
+                // Only include if it's a simple inline element with short text
+                const childText = (node.textContent || '').trim();
+                if (childText.length <= 30 && !childText.toLowerCase().includes('always')) {
+                    ownText += ' ' + childText;
+                }
+            }
+        }
+        ownText = ownText.trim();
+        // Fallback: if we got nothing useful, use textContent but cap it
+        if (!ownText) {
+            ownText = (el.textContent || '').trim();
+        }
+        return ownText.toLowerCase();
+    }
+
     function isAcceptButton(el) {
         // GUARD: Only accept buttons inside the conversation/agent panel area
         if (!isInConversationArea(el)) return false;
 
-        // Use direct text of the element itself first (not deep textContent which includes children)
-        let text = '';
-        // Try to get the button's own text first
-        if (el.childNodes.length <= 3) {
-            // Simple button - use textContent
-            text = (el.textContent || '').trim().toLowerCase();
-        } else {
-            // Complex button with many children - use innerText which is more readable
-            text = (el.innerText || el.textContent || '').trim().toLowerCase();
-        }
+        // Get the button's own text precisely, avoiding bleed from nearby elements
+        const text = getButtonOwnText(el);
         if (text.length === 0 || text.length > 100) return false;
 
         // Use configured patterns from state if available, otherwise use defaults
         const state = window.__autoAllState || {};
         const defaultPatterns = ['accept', 'accept all', 'run', 'run all', 'run command', 'retry', 'apply', 'execute', 'confirm', 'allow once', 'allow', 'proceed', 'continue', 'yes', 'ok', 'save', 'approve', 'enable', 'install', 'update', 'overwrite'];
         const patterns = state.acceptPatterns || defaultPatterns;
-        const rejects = ['skip', 'reject', 'cancel', 'close', 'refine', 'deny', 'no', 'dismiss', 'abort', 'ask every time', 'always run', 'always allow', 'always proceed'];
+        const rejects = ['skip', 'reject', 'cancel', 'close', 'refine', 'deny', 'no', 'dismiss', 'abort', 'ask every time'];
 
         if (rejects.some(r => text.includes(r))) return false;
         if (!patterns.some(p => text.includes(p))) return false;
