@@ -2,6 +2,16 @@
 
 All notable changes to **auto-all-Antigravity** will be documented in this file.
 
+## [1.0.25] - 2026-02-17
+
+### Fixed
+
+- **"Step Requires Input" Auto-Expand**: Rewrote `expandCollapsedSections()` to reliably find and click the "Expand" button next to "N Step Requires Input" messages. Uses two strategies: first finds the step message text and clicks nearby expand elements, then falls back to broader search within the agent panel.
+- **Erratic Clicking on Sidebar/Navigation**: Added `isInConversationArea()` guard that restricts auto-clicking to the agent/conversation panel only. Buttons in the sidebar, file explorer, activity bar, editor area, title bar, and status bar are now excluded.
+- **Single-Tab Mode Expand**: The static single-tab polling loop now also calls `expandCollapsedSections()` before clicking accept buttons, matching the behavior of the multi-tab `antigravityLoop`.
+
+---
+
 ## [1.0.23] - 2026-02-11
 
 ### Added

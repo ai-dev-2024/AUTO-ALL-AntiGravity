@@ -599,7 +599,61 @@
         return false;
     }
 
+    // Guard: check if element is inside the agent conversation area (not sidebar/toolbar)
+    function isInConversationArea(el) {
+        // Exclusion: elements inside these containers should never be auto-clicked
+        const excludedSelectors = [
+            '#workbench\\.parts\\.sidebar',         // File explorer, extensions sidebar
+            '#workbench\\.parts\\.activitybar',      // Activity bar (left icons)
+            '#workbench\\.parts\\.titlebar',          // Title bar
+            '#workbench\\.parts\\.statusbar',         // Status bar
+            '#workbench\\.parts\\.editor',            // Editor area (code editing)
+            '.menubar-menu-button',                    // Menu bar buttons
+            '.title-actions',                          // Window title actions
+            '[class*="explorer"]',                     // File explorer
+            '.tabs-container',                         // Editor tab bar
+            '.composite.viewlet',                      // Sidebar viewlets 
+            '.sidebar',                                // Generic sidebar
+            '.activity-bar-container',                 // Activity bar container
+        ];
+
+        for (const selector of excludedSelectors) {
+            try {
+                if (el.closest(selector)) {
+                    return false;
+                }
+            } catch (e) { /* ignore invalid selector */ }
+        }
+
+        // Inclusion: prefer elements inside the agent/conversation panel
+        const includedSelectors = [
+            '#antigravity\\.agentPanel',
+            '#workbench\\.parts\\.auxiliarybar',
+            '[class*="agent"]',
+            '[class*="chat"]',
+            '[class*="conversation"]',
+            '[class*="agentic"]',
+        ];
+
+        for (const selector of includedSelectors) {
+            try {
+                if (el.closest(selector)) return true;
+            } catch (e) { /* ignore */ }
+        }
+
+        // If not in any known panel, allow only if it looks like a dialog/modal
+        if (el.closest('[role="dialog"]') || el.closest('[class*="modal"]') || el.closest('[class*="notification"]')) {
+            return true;
+        }
+
+        // Default: reject unknown locations to be safe
+        return false;
+    }
+
     function isAcceptButton(el) {
+        // GUARD: Only accept buttons inside the conversation/agent panel area
+        if (!isInConversationArea(el)) return false;
+
         // Use direct text of the element itself first (not deep textContent which includes children)
         let text = '';
         // Try to get the button's own text first
@@ -805,44 +859,80 @@
     }
 
     // Expand collapsed sections to reveal hidden steps that need approval
-    // IMPORTANT: Only targets specific "Expand" links next to step requirement messages
-    // in the agent panel - NOT dropdowns, menus, model selectors, or other UI elements
+    // Targets "Expand" buttons/links near "N Step Requires Input" messages
     function expandCollapsedSections() {
         let expanded = 0;
 
-        // Strategy: Look for text patterns like "N Step Requires Input" or "Expand" 
-        // that appear specifically in the agent conversation area
+        // Search in agent panel first, fall back to whole document
         const agentPanel = document.querySelector('#antigravity\\.agentPanel') ||
+            document.querySelector('#workbench\\.parts\\.auxiliarybar') ||
             document.querySelector('[class*="agent"]') ||
             document;
 
-        // Only look for specific clickable text links, not all buttons
-        const candidates = agentPanel.querySelectorAll('a, span[role="button"], [class*="expand-link"], [class*="expandable"]');
+        // Strategy 1: Find elements containing "Step Requires Input" text and click nearby expand
+        const allElements = agentPanel.querySelectorAll('*');
+        for (const el of allElements) {
+            // Check only leaf-ish elements with step-requires-input text
+            const text = (el.textContent || '').trim();
+            if (/\d+\s*Steps?\s*Require/i.test(text) && text.length < 100) {
+                // Found the "N Step Requires Input" message
+                // Look for a sibling or nearby "Expand" button/link
+                const parent = el.parentElement;
+                if (!parent) continue;
 
-        for (const el of candidates) {
-            const text = (el.textContent || '').trim().toLowerCase();
+                // Check siblings and parent's children for expand buttons
+                const nearby = parent.querySelectorAll('a, button, span, div[role="button"], [class*="expand"]');
+                for (const candidate of nearby) {
+                    const cText = (candidate.textContent || '').trim().toLowerCase();
+                    if (cText === 'expand' || cText === 'expand all' || cText === 'show all' || cText === 'show') {
+                        const style = window.getComputedStyle(candidate);
+                        const rect = candidate.getBoundingClientRect();
+                        if (style.display !== 'none' && rect.width > 0 && rect.height > 0) {
+                            log(`[Expand] Found expand near step message: "${cText}"`);
+                            candidate.dispatchEvent(new MouseEvent('click', { view: window, bubbles: true, cancelable: true }));
+                            expanded++;
+                        }
+                    }
+                }
 
-            // Only match very specific expand patterns related to steps
-            const isStepExpand = (
-                text === 'expand' ||
-                text === 'expand all' ||
-                text === 'collapse all' ||
-                // "N Step Requires Input" with nearby expand
-                /^\d+\s*steps?\s*(require|need)/i.test(text)
-            );
-
-            if (!isStepExpand || text.length > 50) continue;
-
-            const style = window.getComputedStyle(el);
-            const rect = el.getBoundingClientRect();
-            const isVisible = style.display !== 'none' && rect.width > 0 && rect.height > 0;
-
-            if (isVisible) {
-                log(`[Expand] Clicking step expand: "${text}"`);
-                el.dispatchEvent(new MouseEvent('click', { view: window, bubbles: true, cancelable: true }));
-                expanded++;
+                // Also try clicking the step message element itself (some UIs make it clickable)
+                if (expanded === 0) {
+                    const elRect = el.getBoundingClientRect();
+                    if (elRect.width > 0 && elRect.height > 0) {
+                        log(`[Expand] Clicking step message directly: "${text.substring(0, 40)}"`);
+                        el.dispatchEvent(new MouseEvent('click', { view: window, bubbles: true, cancelable: true }));
+                        expanded++;
+                    }
+                }
             }
         }
+
+        // Strategy 2: Broader search for expand links/buttons within agent panel
+        if (expanded === 0) {
+            const candidates = agentPanel.querySelectorAll('a, button, span[role="button"], [role="button"], [class*="expand"], [class*="collapse"]');
+            for (const el of candidates) {
+                const text = (el.textContent || '').trim().toLowerCase();
+                const isStepExpand = (
+                    text === 'expand' ||
+                    text === 'expand all' ||
+                    /^\d+\s*steps?\s*(require|need)/i.test(text)
+                );
+
+                if (!isStepExpand || text.length > 60) continue;
+
+                // Make sure it's inside the conversation area, not toolbar
+                if (!isInConversationArea(el)) continue;
+
+                const style = window.getComputedStyle(el);
+                const rect = el.getBoundingClientRect();
+                if (style.display !== 'none' && rect.width > 0 && rect.height > 0) {
+                    log(`[Expand] Clicking expand element: "${text}"`);
+                    el.dispatchEvent(new MouseEvent('click', { view: window, bubbles: true, cancelable: true }));
+                    expanded++;
+                }
+            }
+        }
+
         return expanded;
     }
 
@@ -1007,7 +1097,10 @@
                 log(`Starting static poll loop...`);
                 (async function staticLoop() {
                     while (state.isRunning && state.sessionID === sid) {
-                        performClick(['button', '[class*="button"]', '[class*="anysphere"]']);
+                        // First, expand any collapsed sections
+                        expandCollapsedSections();
+                        // Then click accept buttons (scoped by isInConversationArea guard)
+                        performClick(['.bg-ide-button-background', 'button', '[role="button"]', '[class*="button"]']);
                         await workerDelay(config.pollInterval || 500);
                     }
                 })();
