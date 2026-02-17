@@ -641,13 +641,10 @@
             } catch (e) { /* ignore */ }
         }
 
-        // If not in any known panel, allow only if it looks like a dialog/modal
-        if (el.closest('[role="dialog"]') || el.closest('[class*="modal"]') || el.closest('[class*="notification"]')) {
-            return true;
-        }
-
-        // Default: reject unknown locations to be safe
-        return false;
+        // Default: ACCEPT if element passed the exclusion check above.
+        // The exclusion list is the primary guard against erratic clicking.
+        // Defaulting to reject breaks auto-accept when Antigravity updates its DOM.
+        return true;
     }
 
     function getButtonOwnText(el) {
@@ -902,7 +899,7 @@
                 const nearby = parent.querySelectorAll('a, button, span, div[role="button"], [class*="expand"]');
                 for (const candidate of nearby) {
                     const cText = (candidate.textContent || '').trim().toLowerCase();
-                    if (cText === 'expand' || cText === 'expand all' || cText === 'show all' || cText === 'show') {
+                    if (cText.startsWith('expand') || cText.startsWith('show') || cText === 'show all') {
                         const style = window.getComputedStyle(candidate);
                         const rect = candidate.getBoundingClientRect();
                         if (style.display !== 'none' && rect.width > 0 && rect.height > 0) {
@@ -931,8 +928,8 @@
             for (const el of candidates) {
                 const text = (el.textContent || '').trim().toLowerCase();
                 const isStepExpand = (
-                    text === 'expand' ||
-                    text === 'expand all' ||
+                    text.startsWith('expand') ||
+                    text.startsWith('show') ||
                     /^\d+\s*steps?\s*(require|need)/i.test(text)
                 );
 

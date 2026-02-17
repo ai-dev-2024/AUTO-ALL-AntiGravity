@@ -2,6 +2,16 @@
 
 All notable changes to **auto-all-Antigravity** will be documented in this file.
 
+## [1.0.28] - 2026-02-17
+
+### Fixed
+
+- **Auto-Accept Completely Broken**: Fixed critical bug where `isInConversationArea()` defaulted to rejecting all buttons when Antigravity updated its DOM structure. Changed default from reject to accept — the exclusion list (sidebar, editor, toolbar) remains the active guard against erratic clicking.
+- **Auto-Expand Not Clicking "Expand >"**: Fixed `expandCollapsedSections()` using exact text match (`=== 'expand'`) which didn't match Antigravity's "Expand >" link text. Now uses `startsWith('expand')` for resilient matching.
+- **Button Text Contamination**: Improved button text extraction with `getButtonOwnText()` to prevent "Always run" checkbox text from contaminating nearby "Run All" button detection.
+
+---
+
 ## [1.0.27] - 2026-02-17
 
 ### Fixed
