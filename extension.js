@@ -240,17 +240,27 @@ async function checkEnvironmentAndStart() {
     log(`CDP availability check: ${cdpAvailable}`);
 
     if (!cdpAvailable && relauncher) {
-        // Auto-relaunch with CDP enabled (no prompts needed)
-        log('CDP not available. Auto-relaunching with CDP enabled...');
-        vscode.window.showInformationMessage('⚡ auto-all-Antigravity: Setting up CDP, restarting...');
+        const lastAutoAttempt = globalContext.globalState.get('autoAll.lastAutoRelaunch', 0);
+        const autoCooldown = 120000; // 2 minutes
+        const now = Date.now();
 
-        const result = await relauncher.relaunchWithCDP();
-        if (result.success && result.action === 'relaunched') {
-            log('Relaunch initiated. Exiting current instance...');
-            return; // Will quit and relaunch
-        } else if (!result.success) {
-            log(`Auto-relaunch failed: ${result.message}`);
-            // Fall through to normal operation - user can manually trigger via status bar
+        if (now - lastAutoAttempt < autoCooldown) {
+            log('Auto-relaunch blocked by 2-minute cooldown to prevent infinite loops.');
+            vscode.window.showWarningMessage('⚡ auto-all-Antigravity: Auto-restart prevented to avoid infinite loop. Please check terminal logs.');
+        } else {
+            // Auto-relaunch with CDP enabled (no prompts needed)
+            await globalContext.globalState.update('autoAll.lastAutoRelaunch', now);
+            log('CDP not available. Auto-relaunching with CDP enabled...');
+            vscode.window.showInformationMessage('⚡ auto-all-Antigravity: Setting up CDP, restarting...');
+
+            const result = await relauncher.relaunchWithCDP();
+            if (result.success && result.action === 'relaunched') {
+                log('Relaunch initiated. Exiting current instance...');
+                return; // Will quit and relaunch
+            } else if (!result.success) {
+                log(`Auto-relaunch failed: ${result.message}`);
+                // Fall through to normal operation - user can manually trigger via status bar
+            }
         }
     }
 

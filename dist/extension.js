@@ -5543,14 +5543,23 @@ async function checkEnvironmentAndStart() {
   const cdpAvailable = cdpHandler ? await cdpHandler.isCDPAvailable() : false;
   log(`CDP availability check: ${cdpAvailable}`);
   if (!cdpAvailable && relauncher) {
-    log("CDP not available. Auto-relaunching with CDP enabled...");
-    vscode.window.showInformationMessage("\u26A1 auto-all-Antigravity: Setting up CDP, restarting...");
-    const result = await relauncher.relaunchWithCDP();
-    if (result.success && result.action === "relaunched") {
-      log("Relaunch initiated. Exiting current instance...");
-      return;
-    } else if (!result.success) {
-      log(`Auto-relaunch failed: ${result.message}`);
+    const lastAutoAttempt = globalContext.globalState.get("autoAll.lastAutoRelaunch", 0);
+    const autoCooldown = 12e4;
+    const now = Date.now();
+    if (now - lastAutoAttempt < autoCooldown) {
+      log("Auto-relaunch blocked by 2-minute cooldown to prevent infinite loops.");
+      vscode.window.showWarningMessage("\u26A1 auto-all-Antigravity: Auto-restart prevented to avoid infinite loop. Please check terminal logs.");
+    } else {
+      await globalContext.globalState.update("autoAll.lastAutoRelaunch", now);
+      log("CDP not available. Auto-relaunching with CDP enabled...");
+      vscode.window.showInformationMessage("\u26A1 auto-all-Antigravity: Setting up CDP, restarting...");
+      const result = await relauncher.relaunchWithCDP();
+      if (result.success && result.action === "relaunched") {
+        log("Relaunch initiated. Exiting current instance...");
+        return;
+      } else if (!result.success) {
+        log(`Auto-relaunch failed: ${result.message}`);
+      }
     }
   }
   if (isEnabled) {
