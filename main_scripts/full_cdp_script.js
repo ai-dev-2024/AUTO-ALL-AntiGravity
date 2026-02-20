@@ -978,7 +978,7 @@
 
             await workerDelay(200);
 
-            const tabs = queryAll('button.grow');
+            const tabs = queryAll('button.grow:not(.history-view button):not([role="dialog"] button)');
             log(`[Loop] Cycle ${cycle}: Found ${tabs.length} tabs`);
             updateTabNames(tabs);
 

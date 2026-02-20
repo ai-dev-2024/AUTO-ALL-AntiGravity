@@ -10,7 +10,7 @@ class CDPHandler {
         this.startPort = startPort;
         this.endPort = endPort;
         this.logger = logger;
-        this.connections = new Map(); 
+        this.connections = new Map();
         this.messageId = 1;
         this.pendingMessages = new Map();
         this.isEnabled = false;
@@ -83,19 +83,18 @@ class CDPHandler {
 
     async stop() {
         this.isEnabled = false;
-        
+
         const stopPromises = [];
         for (const [pageId] of this.connections) {
             stopPromises.push(
                 this.sendCommand(pageId, 'Runtime.evaluate', {
                     expression: 'if(typeof window !== "undefined" && window.__autoAllStop) window.__autoAllStop()'
-                }).catch(() => { }) 
+                }).catch(() => { })
             );
         }
-        
+
+        await Promise.allSettled(stopPromises);
         this.disconnectAll();
-        
-        Promise.allSettled(stopPromises);
     }
 
     async connectToPage(page) {
@@ -131,7 +130,7 @@ class CDPHandler {
         if (!conn) return;
 
         try {
-            
+
             if (!conn.injected) {
                 const script = this.getComposedScript();
                 const result = await this.sendCommand(pageId, 'Runtime.evaluate', {
@@ -183,7 +182,7 @@ class CDPHandler {
                     this.pendingMessages.delete(id);
                     reject(new Error('timeout'));
                 }
-            }, 2000); 
+            }, 2000);
         });
     }
 
@@ -216,7 +215,7 @@ class CDPHandler {
                     aggregatedStats.actionsWhileAway += stats.actionsWhileAway || 0;
                 }
             } catch (e) {
-                
+
             }
         }
 
@@ -242,7 +241,7 @@ class CDPHandler {
                     aggregatedStats.actionsWhileAway += stats.actionsWhileAway || 0;
                 }
             } catch (e) {
-                
+
             }
         }
 

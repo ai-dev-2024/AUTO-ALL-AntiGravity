@@ -87,7 +87,7 @@ async function activate(context) {
 
     try {
 
-        isEnabled = context.globalState.get(GLOBAL_STATE_KEY, false);
+        isEnabled = context.globalState.get(GLOBAL_STATE_KEY, true);
         isPro = context.globalState.get(PRO_STATE_KEY, false);
         isPro = true;
 
@@ -97,7 +97,8 @@ async function activate(context) {
             pollFrequency = 100;
         }
 
-        backgroundModeEnabled = context.globalState.get(BACKGROUND_MODE_KEY, false);
+        backgroundModeEnabled = false;
+        context.globalState.update(BACKGROUND_MODE_KEY, false);
 
         const defaultBannedCommands = [
             'rm -rf /',
