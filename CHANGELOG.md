@@ -2,6 +2,18 @@
 
 All notable changes to **auto-all-Antigravity** will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+
+- **Antigravity/Gemini Menu Flashing & Focus Theft**: Hardened `full_cdp_script.js` to fail closed in Antigravity mode unless elements are inside the agent interaction panel. This prevents global menu/toolbar scans from triggering the `Always run` permission dropdown and stealing keyboard focus.
+- **Antigravity Multi-Tab UI Jank (related)**: Restricted Antigravity tab queries/switches to the agent panel instead of broad document scans, reducing accidental UI interactions that amplify flashing and scroll slowdown in `Multi` mode.
+
+### Changed
+
+- **Antigravity Mode Safety Behavior**: Disabled `clickAlwaysRunDropdown()` automation in Antigravity/Gemini mode. Core auto-accept remains active, but the permission dropdown is no longer auto-clicked in this IDE mode to avoid menu flashing regressions.
+- **Antigravity Focus Stability**: Debounced focus-triggered away-action checks and suppressed away-action toast popups in Antigravity mode to reduce residual keyboard focus theft after the flashing hotfix.
+
 ## [1.0.28] - 2026-02-17
 
 ### Fixed

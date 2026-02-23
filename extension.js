@@ -129,9 +129,23 @@ async function activate(context) {
             }
 
             if (e.focused && isEnabled) {
-                log(`[Away] Window focus detected by VS Code API. Checking for away actions...`);
+                const now = Date.now();
+                if (now - lastWindowFocusHandledAt < FOCUS_CHECK_COOLDOWN_MS) {
+                    log(`[Away] Focus event throttled (${now - lastWindowFocusHandledAt}ms since last handled focus event)`);
+                    return;
+                }
+                lastWindowFocusHandledAt = now;
 
-                setTimeout(() => checkForAwayActions(context), 500);
+                if (pendingFocusCheckTimer) {
+                    clearTimeout(pendingFocusCheckTimer);
+                    pendingFocusCheckTimer = null;
+                }
+
+                log(`[Away] Window focus detected by VS Code API. Scheduling debounced away-action check...`);
+                pendingFocusCheckTimer = setTimeout(() => {
+                    pendingFocusCheckTimer = null;
+                    checkForAwayActions(context);
+                }, FOCUS_CHECK_DEBOUNCE_MS);
             }
         });
 
@@ -663,6 +677,11 @@ async function showAwayActionsNotification(context, actionsCount) {
     const message = `🚀 auto-all-Antigravity handled ${actionsCount} action${actionsCount > 1 ? 's' : ''} while you were away.`;
     const detail = `Agents stayed autonomous while you focused elsewhere.`;
 
+    if ((currentIDE || '').toLowerCase() === 'antigravity') {
+        log(`[Notification] Suppressed away-actions popup in Antigravity mode (${actionsCount} actions) to avoid focus theft`);
+        return;
+    }
+
     vscode.window.showInformationMessage(
         message,
         { detail },
@@ -702,6 +721,10 @@ async function showBackgroundModeUpsell(context) {
 }
 
 let lastAwayCheck = Date.now();
+let lastWindowFocusHandledAt = 0;
+let pendingFocusCheckTimer = null;
+const FOCUS_CHECK_DEBOUNCE_MS = 1500;
+const FOCUS_CHECK_COOLDOWN_MS = 5000;
 async function checkForAwayActions(context) {
     log(`[Away] checkForAwayActions called. cdpHandler=${!!cdpHandler}, isEnabled=${isEnabled}`);
     if (!cdpHandler || !isEnabled) {

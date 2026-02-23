@@ -265,6 +265,30 @@
         return results;
     };
 
+    const queryAllWithin = (root, selector) => {
+        const results = [];
+        if (!root) return results;
+        getDocuments(root).forEach(doc => {
+            try { results.push(...Array.from(doc.querySelectorAll(selector))); } catch (e) { }
+        });
+        return results;
+    };
+
+    function getAgentInteractionRoot() {
+        return document.querySelector('#antigravity\\.agentPanel') ||
+            document.querySelector('#workbench\\.parts\\.auxiliarybar') ||
+            document.querySelector('[class*="agentic"]') ||
+            document.querySelector('[class*="conversation"]') ||
+            document.querySelector('[class*="chat"]') ||
+            document.querySelector('[class*="agent"]') ||
+            null;
+    }
+
+    function isStrictScopedMode() {
+        const mode = (window.__autoAllState?.currentMode || '').toLowerCase();
+        return mode === 'antigravity';
+    }
+
     const stripTimeSuffix = (text) => {
         return (text || '').trim().replace(/\s*\d+[smh]$/, '').trim();
     };
@@ -641,9 +665,12 @@
             } catch (e) { /* ignore */ }
         }
 
-        // Default: ACCEPT if element passed the exclusion check above.
-        // The exclusion list is the primary guard against erratic clicking.
-        // Defaulting to reject breaks auto-accept when Antigravity updates its DOM.
+        // Antigravity/Gemini mode must fail closed to avoid global menu/toolbar clicks.
+        if (isStrictScopedMode()) {
+            return false;
+        }
+
+        // For non-Antigravity modes keep permissive fallback for compatibility.
         return true;
     }
 
@@ -734,6 +761,13 @@
     let alwaysRunClicked = false;
 
     function clickAlwaysRunDropdown() {
+        // Antigravity/Gemini mode: disable dropdown automation entirely.
+        // This UI element is the source of aggressive flashing/focus theft.
+        // Core auto-accept still works via performClick() on safe scoped buttons.
+        if (isStrictScopedMode()) {
+            return false;
+        }
+
         // If we've already clicked "Always run", don't interact with dropdown anymore
         if (alwaysRunClicked) {
             return false;
@@ -750,8 +784,14 @@
             'li'
         ];
 
+        const interactionRoot = getAgentInteractionRoot();
+        if (isStrictScopedMode() && !interactionRoot) {
+            log('[Dropdown] Skipping global "Always run" scan: no agent interaction root found');
+            return false;
+        }
+
         for (const selector of dropdownSelectors) {
-            const items = queryAll(selector);
+            const items = interactionRoot ? queryAllWithin(interactionRoot, selector) : queryAll(selector);
             for (const item of items) {
                 const text = (item.textContent || '').trim().toLowerCase();
                 // Match "Always run", "Always allow", etc.
@@ -767,7 +807,7 @@
                         parseFloat(style.opacity) > 0.1 &&
                         rect.width > 0 && rect.height > 0;
 
-                    if (isVisible) {
+                    if (isVisible && isInConversationArea(item)) {
                         log('[Dropdown] Clicking "Always run" option - will not click again');
                         item.dispatchEvent(new MouseEvent('click', { view: window, bubbles: true, cancelable: true }));
                         alwaysRunClicked = true;  // Remember we clicked it
@@ -879,10 +919,11 @@
         let expanded = 0;
 
         // Search in agent panel first, fall back to whole document
-        const agentPanel = document.querySelector('#antigravity\\.agentPanel') ||
-            document.querySelector('#workbench\\.parts\\.auxiliarybar') ||
-            document.querySelector('[class*="agent"]') ||
-            document;
+        const interactionRoot = getAgentInteractionRoot();
+        const agentPanel = interactionRoot || (isStrictScopedMode() ? null : document);
+        if (!agentPanel) {
+            return 0;
+        }
 
         // Strategy 1: Find elements containing "Step Requires Input" text and click nearby expand
         const allElements = agentPanel.querySelectorAll('*');
@@ -978,7 +1019,8 @@
 
             await workerDelay(200);
 
-            const tabs = queryAll('button.grow');
+            const interactionRoot = getAgentInteractionRoot();
+            const tabs = interactionRoot ? queryAllWithin(interactionRoot, 'button.grow') : [];
             log(`[Loop] Cycle ${cycle}: Found ${tabs.length} tabs`);
             updateTabNames(tabs);
 
