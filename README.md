@@ -23,6 +23,9 @@
   <a href="https://ko-fi.com/ai_dev_2024">
     <img src="https://img.shields.io/badge/Support-Ko--fi-ff5e5b?style=for-the-badge&logo=ko-fi" alt="Support on Ko-fi" />
   </a>
+  <a href="https://startup.z.ai/">
+    <img src="https://img.shields.io/badge/Part%20of-ZAI%20Start--up%20Community-8b5cf6?style=for-the-badge" alt="ZAI Community" />
+  </a>
 </p>
 
 <p align="center">
