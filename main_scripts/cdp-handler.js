@@ -44,7 +44,8 @@ class CDPHandler {
         for (let port = this.startPort; port <= this.endPort; port++) {
             try {
                 const pages = await this.getPages(port);
-                if (pages.length > 0) instances.push({ port, pages });
+                const validPages = pages.filter(p => !(p.title?.toLowerCase().includes('preview') || p.url?.toLowerCase().includes('preview')));
+                if (validPages.length > 0) instances.push({ port, pages: validPages });
             } catch (e) { }
         }
         return instances;
