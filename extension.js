@@ -239,18 +239,13 @@ async function checkEnvironmentAndStart() {
     log(`CDP availability check: ${cdpAvailable}`);
 
     if (!cdpAvailable && relauncher) {
-        // Auto-relaunch with CDP enabled (no prompts needed)
-        log('CDP not available. Auto-relaunching with CDP enabled...');
-        vscode.window.showInformationMessage('⚡ auto-all-Antigravity: Setting up CDP, restarting...');
-
-        const result = await relauncher.relaunchWithCDP();
-        if (result.success && result.action === 'relaunched') {
-            log('Relaunch initiated. Exiting current instance...');
-            return; // Will quit and relaunch
-        } else if (!result.success) {
-            log(`Auto-relaunch failed: ${result.message}`);
-            // Fall through to normal operation - user can manually trigger via status bar
-        }
+        // Never restart the IDE during extension activation. Restarting here can
+        // create a loop when CDP is slow to start, the port is unavailable, or
+        // the relaunched process does not retain the debugging flag.
+        log('CDP not available. Automatic startup relaunch is disabled; waiting for explicit user setup.');
+        vscode.window.showWarningMessage(
+            'auto-all-Antigravity: Background mode needs CDP setup. Enable the extension or use the relaunch command to set it up and restart.'
+        );
     }
 
     // Only start polling if enabled

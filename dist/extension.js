@@ -5542,15 +5542,10 @@ async function checkEnvironmentAndStart() {
   const cdpAvailable = cdpHandler ? await cdpHandler.isCDPAvailable() : false;
   log(`CDP availability check: ${cdpAvailable}`);
   if (!cdpAvailable && relauncher) {
-    log("CDP not available. Auto-relaunching with CDP enabled...");
-    vscode.window.showInformationMessage("\u26A1 auto-all-Antigravity: Setting up CDP, restarting...");
-    const result = await relauncher.relaunchWithCDP();
-    if (result.success && result.action === "relaunched") {
-      log("Relaunch initiated. Exiting current instance...");
-      return;
-    } else if (!result.success) {
-      log(`Auto-relaunch failed: ${result.message}`);
-    }
+    log("CDP not available. Automatic startup relaunch is disabled; waiting for explicit user setup.");
+    vscode.window.showWarningMessage(
+      "auto-all-Antigravity: Background mode needs CDP setup. Enable the extension or use the relaunch command to set it up and restart."
+    );
   }
   if (isEnabled) {
     await startPolling();
