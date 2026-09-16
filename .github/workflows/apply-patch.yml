@@ -20,7 +20,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B fix/no-forced-startup-relaunch master
-          git am -3 0001-fix-require-consent-before-CDP-restart.patch
-          git rm 0001-fix-require-consent-before-CDP-restart.patch
-          git commit -m "chore: remove patch payload"
+          base64 -d patch.b64 > /tmp/fix.patch
+          git apply --ignore-space-change --ignore-whitespace /tmp/fix.patch
+          git add extension.js test/integration-test.js
+          git add -f dist/extension.js
+          git commit -m "fix: require consent before CDP restart"
+          git rm patch.b64 0001-fix-require-consent-before-CDP-restart.patch
+          git commit -m "chore: remove patch payloads"
           git push --force-with-lease origin fix/no-forced-startup-relaunch
