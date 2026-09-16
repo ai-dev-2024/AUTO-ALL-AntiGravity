@@ -1,0 +1,26 @@
+name: Apply tested patch
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+      - name: Apply patch and push branch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B fix/no-forced-startup-relaunch master
+          git am 0001-fix-require-consent-before-CDP-restart.patch
+          git rm 0001-fix-require-consent-before-CDP-restart.patch
+          git commit -m "chore: remove patch payload"
+          git push --force-with-lease origin fix/no-forced-startup-relaunch
